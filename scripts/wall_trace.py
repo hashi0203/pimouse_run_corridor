@@ -18,19 +18,19 @@ class WallTrace():
         rate = rospy.Rate(20)
         data = Twist()
 
-        accel = 0.02
+        accel = 0.01
         min_speed = 0.2
-        max_speed = 0.8
+        max_speed = 0.4
         while not rospy.is_shutdown():
             s = self.sensor_values
             data.linear.x += accel
 
-            if s.sum_forward >= 50:          data.linear.x = 0.0 # 前方に物があるときは停止
+            if s.sum_forward >= 100:          data.linear.x = 0.0 # 前方に物があるときは停止
             elif data.linear.x <= min_speed: data.linear.x = min_speed
             elif data.linear.x >= max_speed: data.linear.x = max_speed
 
             if data.linear.x < min_speed:    data.angular.z = 0.0 # 停止しているときは回転しない
-            elif s.left_side < 10:           data.angular.z = 0.0 # 左に物がないときは直進
+            elif s.left_side <= 5:           data.angular.z = 0.0 # 左に物がないときは直進
             else:
                 target = 50
                 error = (target - s.left_side) / 50.0
